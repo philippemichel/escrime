@@ -1,0 +1,98 @@
+---
+title: "Escrime & cancer du sein - Analyse préparatoire"
+author: "Philippe MICHEL"
+output:
+  pdf_document:
+    includes:
+      in_header: tete.tex
+    keep_tex: yes
+    latex_engine: lualatex
+    toc: yes
+  word_document:
+    toc: yes
+  html_document:
+    df_print: paged
+    toc: yes
+  html_notebook:
+    fig_caption: yes
+    theme: spacelab
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include= FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+# knitr::opts_chunk$set(echo = TRUE, warning = TRUE, message = TRUE)
+```
+
+
+```{r info}
+rm(list=ls())
+library("thesisph")
+library("Hmisc")
+library("tidyverse")
+library("missMDA")
+library("epicalc")
+library("factoextra")
+library("lubridate")
+library("knitr")
+# sessionInfo()
+#
+```
+
+
+```{r import}
+# Importation des données
+#
+tt <- read.csv("data/SF36 long.csv")
+names(tt) <- tolower(names(tt))
+names(tt) <- chartr("éàèêç","eaeec", names(tt))
+tt$temps <- fct_rev(tt$temps)
+av <- subset(tt,tt$temps == "avant")
+ap <- subset(tt,tt$temps == "après")
+```
+
+
+# Design de l'étude
+
+Il s'agit de données avant/après, un couple de données par patiente. On va donc analyser la différence avant/après avec l'hypothèse nulle qu'il n'y pas de changement.
+
+Le principal reproche qu'on fera à l'étude sera que les patiente, avec ou sans escrime, auront une évolution de leur état général ressenti. Quel serait l'évolution du score SF36 chez des femmes suivies pour un cancer du sein d'un stde/pronostic équivalent & qui ne partciperaient pas aux séances d'escrime ? 
+
+De même, est-ce que les femmes qui particpipent à ces sénces ne sont pas un sous groupe particuleir des femmes suivies pour un cance r du sein ? Moins graves ? Plus motivées ? Moins de douleurs ou autre gène ? 
+
+# Analyse de faisabilité & calcul du nombre de cas nécessaires
+
+Les données disponibles portent sur `r nrow(tt)/2` cas. 
+
+Pour le calcul du nombre de cas nécessaires on va se focaliser sur les socres globaux (physique & mental) & en particulier sur le plus défavorable, c'est à dire celui pour lequel il y a aura le moins de différence avant/après.
+
+```{r diff}
+difphy <- tt%>% 
+  group_by(temps) %>%
+  summarise(moy = mean(score.physique), et = sd(score.physique))
+pdif <- round(difphy[[2,2]]-difphy[[1,2]],2)
+
+dd <- ap$score.physique - av$score.physique
+mm <- mean(dd)
+et <- sd(dd)
+#
+aa <- n.for.2means(mean(dd),0,sd(dd),sd(dd), power = 0.8)
+ntot <- round(aa$n1,3)
+#
+  
+difment <- tt%>% 
+  group_by(temps) %>%
+  summarise(mean(score.mental))
+mdif <- round(difment[[2,2]]-difment[[1,2]],2)
+```
+
+La moyenne des différences pour le score physique est de `r pdif` & de `r mdif` pour le score mental. On fera donc le calcul sur le score physique. On obtient alors un nombre de patientes nécessaires de  `r ntot`. Ce nombre concerne les cas complets c'est à dire avec les données avant & après. Prévoir un certain nombre de perdues de vue reste prudent & une prévision de `r floor(ntot *1.1) + 1` cas semble raisonnable.
+
+Comme il y aura des comparaisons multiples sur les différents items il faudra appliquer une correction qui diminue d'autant la puissance des tests donc un peu plus de cas serait utile, si possible. 
+
+```{r stud}
+stu <-  t.test(score.physique~temps, data =tt, var.equal = T, paired = TRUE)
+stu <- round(stu$p.value,2)
+```
+

@@ -1,0 +1,102 @@
+
+\documentclass[french]{scrartcl}
+\makeatother
+%
+\usepackage{geometry} % permet de redéfinir les marges etc. 
+\usepackage{graphicx} % Pour incorporer des grapiques, des couleurs etc.
+\usepackage{rotating} % Pour  pivoter du texte
+\usepackage{array} % Plus facile pour des tableaux complexes
+\usepackage{fontspec}
+\usepackage[output-decimal-marker={,}]{siunitx} % indisoensable pour les chiffres avec unité
+\usepackage{tikz} % Dessis, graphiques etc.
+\usepackage{multirow} %Pour fusionner des cellules sur plusieurs lignes dans les tableaux
+\usepackage{longtable} % Pour faire des tableaux sur plusieurs pages
+\usepackage{textcomp} % Qelques carctèrs supplémentaires
+\usepackage{booktabs} % Fugnloe les lignes horizontales dans les tableaux
+\usepackage{xspace} % gère les espaces après des fonctions
+\usepackage{babel} % Pour écrire en français
+\usepackage{hyperref} % Liens hyper texte inernes & externes
+%
+\hypersetup{% Réglages des liens hypertextes : couleur etc.
+colorlinks=true,
+pdftitle={},
+pdfauthor={Philippe MICHEL},
+pdfkeywords={},
+unicode
+}
+%
+\setmainfont[Ligatures=TeX]
+{MinionPro-Regular}
+\setsansfont[Ligatures=TeX]
+{TrajanPro}
+% Pour avoir une virgule en mode math
+\mathcode`\.="013B
+%
+\newcommand{\pc}[1]{\SI{#1}{\percent}} 
+\newcolumntype{C}{>{$}c<{$}} % Colonnes en mode math dans les tableaux
+
+
+\title{Escrime \& cancer du sein}
+\subtitle{Analyse préparatoire}
+\author{Philippe MICHEL}
+\date{}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+%\tableofcontents
+}
+\section*{Design de l'étude}\label{design-de-luxe9tude}
+
+Il s'agit de données avant/après, un couple de données par patiente. On
+va donc analyser la différence avant/après avec l'hypothèse nulle qu'il
+n'y pas de changement.
+
+Le principal reproche qu'on fera à l'étude sera que les patientes, avec
+ou sans escrime, auront une évolution de leur état général ressenti.
+Quel serait l'évolution du score SF36 chez des femmes suivies pour un
+cancer du sein d'un stade/pronostic équivalent \& qui ne participeraient
+pas aux séances d'escrime ?
+
+De même, est-ce que les femmes qui participent à ces sénces ne sont pas
+un sous-groupe particulier des femmes suivies pour un cancer du sein ?
+Moins graves ? Plus motivées ? Moins de douleurs ou autre ?
+
+\section*{Calcul du nombre de cas
+nécessaires}
+
+Les données disponibles portent sur 22 cas.
+
+Pour le calcul du nombre de cas nécessaires on va se focaliser sur les
+socres globaux (physique \& mental) \& en particulier sur le plus
+défavorable, c'est à dire celui pour lequel il y a aura le moins de
+différence avant/après.
+
+La moyenne des différences pour le score physique est de 13,12 \& de
+13,38 pour le score mental. On fera donc le calcul sur le score
+physique. On obtient alors un nombre de patientes nécessaires de 44. Ce
+nombre concerne les cas complets c'est à dire avec les données avant \&
+après. Prévoir un certain nombre de perdues de vue reste prudent \& une
+prévision de 49 cas semble raisonnable.
+
+Comme il y aura des comparaisons multiples sur les différents items il
+faudra appliquer une correction qui diminue d'autant la puissance des
+tests donc un peu plus de cas serait utile, si possible.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=.8\linewidth]{figures/phy} 
+  \caption{Score "physique"}
+  \label{figphy}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=.8\linewidth]{figures/ment} 
+  \caption{Score "mental"}
+  \label{figment}
+\end{figure}
+
+\end{document}
