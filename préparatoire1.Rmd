@@ -2,16 +2,16 @@
 title: "Escrime & cancer du sein - Analyse préparatoire"
 author: "Philippe MICHEL"
 output:
+  html_document:
+    df_print: paged
+    toc: yes
+  word_document:
+    toc: yes
   pdf_document:
     includes:
       in_header: tete.tex
     keep_tex: yes
     latex_engine: lualatex
-    toc: yes
-  word_document:
-    toc: yes
-  html_document:
-    df_print: paged
     toc: yes
   html_notebook:
     fig_caption: yes
@@ -32,7 +32,7 @@ library("thesisph")
 library("Hmisc")
 library("tidyverse")
 library("missMDA")
-library("epicalc")
+library("epiDisplay")
 library("factoextra")
 library("lubridate")
 library("knitr")
@@ -94,5 +94,27 @@ Comme il y aura des comparaisons multiples sur les différents items il faudra a
 ```{r stud}
 stu <-  t.test(score.physique~temps, data =tt, var.equal = T, paired = TRUE)
 stu <- round(stu$p.value,2)
+```
+
+# Quelques graphiques
+
+```{r graph1}
+for(i in 3: 12){
+  tit <- toupper(names(tt)[i])
+tt %>% 
+  ggplot() +
+  aes(x = temps, y = tt[,i], fill = temps) +
+  geom_violin() + 
+  geom_boxplot(fill = "white", width = 0.1) +
+  labs(title = "PF") + 
+     theme_light() + 
+     theme(plot.title = element_text(size=16, face="bold"),
+                axis.title.x = element_blank(),
+                axis.title.y = element_blank(),
+                axis.text.x = element_text(size=12),
+                axis.text.y = element_text(size=12),
+                legend.position = "none") +
+  scale_y_continuous(limits = c(0,100))
+}
 ```
 

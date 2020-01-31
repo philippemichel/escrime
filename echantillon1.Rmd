@@ -1,0 +1,111 @@
+---
+title: "Escrime & cancer du sein - Petit échantillon"
+author: "Philippe MICHEL"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+  word_document:
+    toc: yes
+  pdf_document:
+    includes:
+      in_header: tete.tex
+    keep_tex: yes
+    latex_engine: lualatex
+    toc: yes
+  html_notebook:
+    fig_caption: yes
+    theme: spacelab
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include= FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      message = FALSE)
+# knitr::opts_chunk$set(echo = TRUE, warning = TRUE, message = TRUE)
+```
+
+
+```{r info}
+rm(list = ls())
+library("psy")
+library("kableExtra")
+library("corrplot")
+library("rmarkdown")
+library("thesisph")
+library("Hmisc")
+library("tidyverse")
+library("missMDA")
+library("epiDisplay")
+library("factoextra")
+library("lubridate")
+library("rlang")
+library("knitr")
+# sessionInfo()
+#
+```
+
+
+```{r import}
+# Importation des données
+#
+tt <- read.csv("data/SF36 long.csv")
+names(tt) <- tolower(names(tt))
+names(tt) <- chartr("éàèêç", "eaeec", names(tt))
+tt$temps <- fct_rev(tt$temps)
+av <- subset(tt, tt$temps == "avant")
+ap <- subset(tt, tt$temps == "après")
+tt$id <- as.factor(tt$id)
+#tt <- as_tibble(tt)
+```
+
+
+# Validation interne du questionnaire
+
+```{r alpha}
+aa <- cronbach(av[, c(3:6, 8:11)])
+aa <- round(aa$alpha, 3)
+```
+
+
+Même si le SF36 est une échelle bien validée il est préférable de vérifier la validité interne sur notre échantillon. Le test de Cronbach pratiqué sur les questionnaires "avant"  & en excluant les variables calculées ("score physique" & "score mental") montre une valeur $\alpha$ de `r  aa` ce qui est excellent même trop, les variables semblent très liées les unes avec les autres. Ce qui est confirmé par le calcul des corrélations entre variables qui sont toutes positives, c'est à dire qu'aucune variable ne baisse quand les autres montent aussi bien avant que après.
+
+```{r corav}
+aa <- cor(av[, -c(1, 2, 7, 12)])
+corrplot(
+  aa,
+  method = "color",
+  type = "upper",
+  order = "hclust",
+  tl.col = "black",
+  diag = FALSE,
+  title = "Tableau de corrélation - Avant",
+  mar = c(5, 4, 1, 2)
+)
+
+aa <- cor(ap[, -c(1, 2, 7, 12)])
+corrplot(
+  aa,
+  method = "color",
+  type = "upper",
+  order = "hclust",
+  tl.col = "black",
+  diag = FALSE,
+  title = "Tableau de corrélation - Après",
+  mar = c(5, 4, 1, 2)
+)
+```
+
+# Description des résultats
+
+## Avant
+```{r tabdesc1}
+tabdescph(tt[1:22,3:12], capt= 'Questionnaire "avant"', lab = "descav", ka = 1)
+```
+
+## Après
+```{r tabdesc2}
+tabdescph(tt[23:44,3:12], capt= 'Questionnaire "avant"', lab = "descav", ka = 1)
+```
